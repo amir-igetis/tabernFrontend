@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css'
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Auth from './components/AuthComponents/Auth';
 import Dashboard from './components/DashboardComponents/Dashboard';
+import CategoriesPage from './components/CategoryComponents/CategoriesPage';
+import Layout from './components/LayoutComponents/Layout';
 
 const AppContent = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -20,7 +23,20 @@ const AppContent = () => {
 
   return (
     <div className="App">
-      {isAuthenticated ? <Dashboard /> : <Auth />}
+      {isAuthenticated ? (
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Layout>
+      ) : (
+        <Routes>
+          <Route path="*" element={<Auth />} />
+        </Routes>
+      )}
     </div>
   );
 };
@@ -28,9 +44,11 @@ const AppContent = () => {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <Router> {/* Move Router here to wrap everything */}
+        <AppContent />
+      </Router>
     </AuthProvider>
   );
 }
 
-export default App
+export default App;
